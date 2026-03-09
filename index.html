@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cardiac Bleep Checker</title>
+<title>UHL IOC Check Arrest Bleep Status</title>
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -95,9 +95,13 @@
 <body>
 
 <div class="content">
-  <h2>Check Arrest Bleep Status</h2>
+  <h2>Who's on Arrest bleep today?</h2>
 
   <div id="todays-bleeps"></div>
+</div>
+  
+<div class="content">
+  <h3>Arrest Bleep Status Lookup</h3>
 
   <div class="form-group">
     <label for="shift">Select Shift:</label>
@@ -128,7 +132,7 @@
 </div>
 
 <footer>
-  Made by <a href="https://github.com/YOUR_GITHUB_USERNAME" target="_blank" rel="noopener noreferrer">GP O'Byrne</a>
+  Made by <a href="https://github.com/gpobyrne" target="_blank" rel="noopener noreferrer">GP O'Byrne</a>
 </footer>
 
 <script>
@@ -177,7 +181,7 @@
     }
     
     document.getElementById('todays-bleeps').innerHTML = 
-      `🗓️ <strong>Today (${todayName}):</strong> Arrest bleeps are carried by ${bleepStrings.join(', ')}.`;
+      `🗓️ <strong>(Today ${todayName}), </strong> ${bleepStrings.join(', and ')} are carrying arrest bleeps.`;
   }
 
   let currentCopyText = "";
