@@ -39,30 +39,30 @@
   h2 { margin-bottom: 15px; font-size: 1.3em;}
   h3 { margin-bottom: 15px; margin-top: 0; }
 
-  /* Change Date Link Styling */
+  /* Change Date Link Styling (iOS Fix) */
   .date-picker-wrapper {
     position: relative;
     display: inline-flex;
     align-items: center;
-    cursor: pointer;
   }
   .change-date-link {
     color: #0056b3;
     font-size: 0.9em;
     text-decoration: none;
     font-weight: normal;
+    /* Prevent text from blocking the tap to the input */
+    pointer-events: none; 
   }
-  .change-date-link:hover {
-    text-decoration: underline;
-  }
+  /* The invisible input sits exactly on top of the text */
   .hidden-date-input {
     position: absolute;
-    width: 0;
-    height: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     opacity: 0;
-    border: none;
-    padding: 0;
-    z-index: -1;
+    cursor: pointer;
+    -webkit-appearance: none;
   }
 
   /* Flex Layout for Rows */
@@ -182,7 +182,7 @@
 <div class="content">
   <div class="top-header-row">
     <h1>🗓️ <span id="top-date-text"></span></h1>
-    <div class="date-picker-wrapper" onclick="triggerTopDatePicker()">
+    <div class="date-picker-wrapper">
       <span class="change-date-link">change date</span>
       <input type="date" id="top-date-picker" class="hidden-date-input" onchange="handleTopDateChange()">
     </div>
@@ -253,19 +253,6 @@
     displayTodaysBleeps(todayObj);
   };
 
-  function triggerTopDatePicker() {
-    const dateInput = document.getElementById('top-date-picker');
-    try {
-      if (typeof dateInput.showPicker === 'function') {
-        dateInput.showPicker();
-      } else {
-        dateInput.focus();
-      }
-    } catch (e) {
-      dateInput.focus();
-    }
-  }
-
   function handleTopDateChange() {
     const selectedDate = document.getElementById('top-date-picker').value;
     if(selectedDate) {
@@ -275,7 +262,12 @@
   
   function displayTodaysBleeps(dateObj) {
     const dayName = dayNames[dateObj.getDay()];
-    const dateString = dateObj.toLocaleDateString('en-IE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    
+    // Format to dd/mm/yyyy
+    const dd = String(dateObj.getDate()).padStart(2, '0');
+    const mm = String(dateObj.getMonth() + 1).padStart(2, '0'); // January is 0
+    const yyyy = dateObj.getFullYear();
+    const dateString = `${dayName} ${dd}/${mm}/${yyyy}`;
     
     // Update H1 Text
     document.getElementById('top-date-text').innerText = dateString;
