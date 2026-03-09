@@ -39,6 +39,11 @@
   h2 { margin-bottom: 15px; font-size: 1.3em;}
   h3 { margin-bottom: 15px; margin-top: 0; }
 
+  /* Make the specific alert heading red */
+  .urgent-heading {
+    color: #d32f2f;
+  }
+
   /* Change Date Link Styling (iOS Fix) */
   .date-picker-wrapper {
     position: relative;
@@ -123,13 +128,26 @@
 
   .form-group { margin-bottom: 20px; }
   label { display: block; margin-bottom: 8px; font-weight: bold; }
+  
+  /* Form inputs strict sizing to ensure exact width match */
   select, input:not(.hidden-date-input), button:not(.change-date-link) { 
+    display: block;
     width: 100%; 
+    margin: 0;
     padding: 12px; 
     font-size: 16px; 
+    font-family: inherit;
     border: 1px solid #ccc;
     border-radius: 6px;
+    box-sizing: border-box;
   }
+  
+  /* Remove iOS default styling on date picker to prevent shrinking */
+  input[type="date"]:not(.hidden-date-input) {
+    -webkit-appearance: none;
+    height: 46px; /* Matches standard padding height of the select box */
+  }
+
   .main-btn { 
     background-color: #0056b3; 
     color: white; 
@@ -188,7 +206,7 @@
     </div>
   </div>
   
-  <h3>Interns carrying arrest bleep <span id="dynamic-today-text">today</span>:</h3>
+  <h3 class="urgent-heading">Interns carrying arrest bleep <span id="dynamic-today-text">today</span>:</h3>
 
   <div id="todays-bleeps-container"></div>
   
