@@ -26,7 +26,7 @@
   #date-display h2 {
     margin-top: 0;
     margin-bottom: 20px;
-    color: #495057;
+    color: #333;
   }
 
   h2 { margin-bottom: 15px; font-size: 1.3em;}
@@ -215,8 +215,8 @@
     const todayName = dayNames[dateObj.getDay()];
     const dateString = dateObj.toLocaleDateString('en-IE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     
-    // Inject Date as H3 at the top
-    document.getElementById('date-display').innerHTML = `<h3>🗓️ ${dateString}</h3>`;
+    // Inject Date as H2 at the top
+    document.getElementById('date-display').innerHTML = `<h2>🗓️ ${dateString}</h2>`;
 
     let dayShiftsHTML = '';
     let nightShiftsHTML = '';
