@@ -23,17 +23,33 @@
   }
   .content { flex: 1; }
   
-  /* Today's Bleeps Box Styling */
-  #todays-bleeps {
+  h2 { margin-bottom: 5px; }
+  .date-header { 
+    margin-top: 5px; 
+    margin-bottom: 15px; 
+    color: #495057; 
+    font-size: 1.1em;
+  }
+
+  /* Individual Bleep Card Styling */
+  .bleep-card {
     background-color: #e2e3e5;
     border: 1px solid #d6d8db;
     color: #383d41;
     padding: 12px;
     border-radius: 6px;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
     font-size: 0.95em;
     line-height: 1.4;
   }
+  .bleep-card-title {
+    font-size: 1.1em;
+    margin-bottom: 6px;
+    border-bottom: 1px solid #d6d8db;
+    padding-bottom: 4px;
+  }
+
+  .lookup-section { margin-top: 35px; } /* Controls spacing between the two sections */
 
   .form-group { margin-bottom: 20px; }
   label { display: block; margin-bottom: 8px; font-weight: bold; }
@@ -96,39 +112,38 @@
 
 <div class="content">
   <h2>Who's on Arrest bleep today?</h2>
-
-  <div id="todays-bleeps"></div>
-</div>
+  <div id="todays-bleeps-container"></div>
   
-<div class="content">
-  <h3>Arrest Bleep Status Lookup</h3>
+  <div class="lookup-section">
+    <h3>Arrest Bleep Status Lookup</h3>
 
-  <div class="form-group">
-    <label for="shift">Select Shift:</label>
-    <select id="shift">
-      <option value="LD1">LD1 (Day - Bleep 493)</option>
-      <option value="N1">N1 (Night - Bleep 493)</option>
-      <option value="LD2">LD2 (Day - Bleep 498)</option>
-      <option value="N2">N2 (Night - Bleep 498)</option>
-      <option value="LD3">LD3 (Day - Bleep 489)</option>
-      <option value="N3">N3 (Night - Bleep 489)</option>
-      <option value="LD4">LD4 (Day - Bleep 491)</option>
-      <option value="N4">N4 (Night - Bleep 491)</option>
-      <option value="LD5">LD5 (Day - Bleep 364)</option>
-      <option value="N5">N5 (Night - Bleep 364)</option>
-      <option value="LD6">LD6 (Day - Bleep 880)</option>
-      <option value="N6">N6 (Night - Bleep 880)</option>
-    </select>
+    <div class="form-group">
+      <label for="shift">Select Shift:</label>
+      <select id="shift">
+        <option value="LD1">LD1 (Day - Bleep 493)</option>
+        <option value="N1">N1 (Night - Bleep 493)</option>
+        <option value="LD2">LD2 (Day - Bleep 498)</option>
+        <option value="N2">N2 (Night - Bleep 498)</option>
+        <option value="LD3">LD3 (Day - Bleep 489)</option>
+        <option value="N3">N3 (Night - Bleep 489)</option>
+        <option value="LD4">LD4 (Day - Bleep 491)</option>
+        <option value="N4">N4 (Night - Bleep 491)</option>
+        <option value="LD5">LD5 (Day - Bleep 364)</option>
+        <option value="N5">N5 (Night - Bleep 364)</option>
+        <option value="LD6">LD6 (Day - Bleep 880)</option>
+        <option value="N6">N6 (Night - Bleep 880)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="date">Select Date:</label>
+      <input type="date" id="date">
+    </div>
+
+    <button class="main-btn" onclick="checkBleep()">Check Bleep Status</button>
+
+    <div id="result"></div>
   </div>
-
-  <div class="form-group">
-    <label for="date">Select Date:</label>
-    <input type="date" id="date">
-  </div>
-
-  <button class="main-btn" onclick="checkBleep()">Check Bleep Status</button>
-
-  <div id="result"></div>
 </div>
 
 <footer>
@@ -162,26 +177,33 @@
   
   function displayTodaysBleeps(dateObj) {
     const todayName = dayNames[dateObj.getDay()];
+    // Format date as "Monday, 9 March 2026"
+    const dateString = dateObj.toLocaleDateString('en-IE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     let activeBleeps = {};
 
-    // Group shifts carrying the bleep today
+    // Group shifts and grab wards carrying the bleep today
     for (const [shift, data] of Object.entries(bleepData)) {
       if (data.days.includes(todayName)) {
         if (!activeBleeps[data.bleep]) {
-          activeBleeps[data.bleep] = [];
+          activeBleeps[data.bleep] = { shifts: [], wards: data.wards.join(', ') };
         }
-        activeBleeps[data.bleep].push(shift);
+        activeBleeps[data.bleep].shifts.push(shift);
       }
     }
 
-    // Format output
-    let bleepStrings = [];
-    for (const [bleep, shifts] of Object.entries(activeBleeps)) {
-      bleepStrings.push(`<strong>${shifts.join(' & ')}</strong> (Bleep ${bleep})`);
+    // Build the HTML
+    let containerHTML = `<h3 class="date-header">🗓️ ${dateString}</h3>`;
+    
+    for (const [bleep, info] of Object.entries(activeBleeps)) {
+      containerHTML += `
+        <div class="bleep-card">
+          <div class="bleep-card-title"><strong>${info.shifts.join(' & ')}</strong> (Bleep ${bleep})</div>
+          <div><strong>Wards:</strong> ${info.wards}</div>
+        </div>
+      `;
     }
     
-    document.getElementById('todays-bleeps').innerHTML = 
-      `🗓️ <strong>(Today ${todayName}), </strong> ${bleepStrings.join(', and ')} are carrying arrest bleeps.`;
+    document.getElementById('todays-bleeps-container').innerHTML = containerHTML;
   }
 
   let currentCopyText = "";
