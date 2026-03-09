@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UHL IOC Cardiac Arrest Bleep Checker</title>
+<title>Cardiac Bleep Checker</title>
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -22,6 +22,19 @@
     min-height: 90vh;
   }
   .content { flex: 1; }
+  
+  /* Today's Bleeps Box Styling */
+  #todays-bleeps {
+    background-color: #e2e3e5;
+    border: 1px solid #d6d8db;
+    color: #383d41;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 0.95em;
+    line-height: 1.4;
+  }
+
   .form-group { margin-bottom: 20px; }
   label { display: block; margin-bottom: 8px; font-weight: bold; }
   select, input, button { 
@@ -82,7 +95,9 @@
 <body>
 
 <div class="content">
-  <h2>Check a future shift</h2>
+  <h2>Check Arrest Bleep Status</h2>
+
+  <div id="todays-bleeps"></div>
 
   <div class="form-group">
     <label for="shift">Select Shift:</label>
@@ -107,13 +122,13 @@
     <input type="date" id="date">
   </div>
 
-  <button class="main-btn" onclick="checkBleep()">Check Arrest Bleep Status</button>
+  <button class="main-btn" onclick="checkBleep()">Check Bleep Status</button>
 
   <div id="result"></div>
 </div>
 
 <footer>
-  Made by <a href="https://github.com/gpobyrne" target="_blank" rel="noopener noreferrer">GP O'Byrne</a>
+  Made by <a href="https://github.com/YOUR_GITHUB_USERNAME" target="_blank" rel="noopener noreferrer">GP O'Byrne</a>
 </footer>
 
 <script>
@@ -132,8 +147,39 @@
     "N6":  { "bleep": "880", "days": ["Sunday"], "wards": ["9C", "9D", "9E", "9F", "CCU", "Cardiac Day Ward"] }
   };
 
-  document.getElementById('date').valueAsDate = new Date();
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+  // Initialization
+  window.onload = function() {
+    const todayObj = new Date();
+    document.getElementById('date').valueAsDate = todayObj;
+    displayTodaysBleeps(todayObj);
+  };
   
+  function displayTodaysBleeps(dateObj) {
+    const todayName = dayNames[dateObj.getDay()];
+    let activeBleeps = {};
+
+    // Group shifts carrying the bleep today
+    for (const [shift, data] of Object.entries(bleepData)) {
+      if (data.days.includes(todayName)) {
+        if (!activeBleeps[data.bleep]) {
+          activeBleeps[data.bleep] = [];
+        }
+        activeBleeps[data.bleep].push(shift);
+      }
+    }
+
+    // Format output
+    let bleepStrings = [];
+    for (const [bleep, shifts] of Object.entries(activeBleeps)) {
+      bleepStrings.push(`<strong>${shifts.join(' & ')}</strong> (Bleep ${bleep})`);
+    }
+    
+    document.getElementById('todays-bleeps').innerHTML = 
+      `🗓️ <strong>Today (${todayName}):</strong> Arrest bleeps are carried by ${bleepStrings.join(', ')}.`;
+  }
+
   let currentCopyText = "";
 
   function checkBleep() {
@@ -147,7 +193,6 @@
     }
 
     const dateObj = new Date(dateInput);
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const selectedDay = dayNames[dateObj.getDay()];
 
     const shiftData = bleepData[shift];
@@ -167,8 +212,7 @@
         : `<strong>NO.</strong> ${shift} does not carry the arrest bleep on ${selectedDay}s.`;
 
     resultDiv.innerHTML = `${statusText}
-
-                           <div class="details">Arrest bleep days: ${routineDays}</div>
+                           <div class="details">Routine cardiac days: ${routineDays}</div>
                            <div class="details wards-list"><strong>Wards Covered:</strong> ${wardsList}</div>
                            <button class="copy-btn" onclick="copyToClipboard(this)">Copy for Handover</button>`;
   }
