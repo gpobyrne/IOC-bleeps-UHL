@@ -5,7 +5,7 @@ Simple web app that allows intern doctors working at University Hospital Limeric
 
 This app is intended for use as a quick reference-tool only. 
 
-All query results are based on the revised Intern On Call Rota Structure document, which UHL's Medical Manpower department circulated via email on **27/02/2026**. 
+All query results are based on the revised "Intern On Call Rota Structure" document which was circulated by UHL's Medical Manpower department, via email, on **27/02/2026**. 
 
 This is a static website, which means the Ward Distributions and Scheduled Arrest Bleep days were entered manually. If Medical Manpower issue further changes or revisions in the future, then assume the results provided by the app are inaccurate. 
 
