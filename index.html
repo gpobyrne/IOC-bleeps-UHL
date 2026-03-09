@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cardiac Bleep Checker</title>
+<title>UHL IOC Cardiac Arrest Bleep Checker</title>
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -82,7 +82,7 @@
 <body>
 
 <div class="content">
-  <h2>Cardiac Bleep Checker</h2>
+  <h2>Check a future shift</h2>
 
   <div class="form-group">
     <label for="shift">Select Shift:</label>
@@ -107,14 +107,13 @@
     <input type="date" id="date">
   </div>
 
-  <button class="main-btn" onclick="checkBleep()">Check Bleep Status</button>
+  <button class="main-btn" onclick="checkBleep()">Check Arrest Bleep Status</button>
 
   <div id="result"></div>
 </div>
 
 <footer>
   Made by <a href="https://github.com/gpobyrne" target="_blank" rel="noopener noreferrer">GP O'Byrne</a>
-  - March 2026.
 </footer>
 
 <script>
@@ -168,7 +167,8 @@
         : `<strong>NO.</strong> ${shift} does not carry the arrest bleep on ${selectedDay}s.`;
 
     resultDiv.innerHTML = `${statusText}
-                           <div class="details">Routine cardiac days: ${routineDays}</div>
+
+                           <div class="details">Arrest bleep days: ${routineDays}</div>
                            <div class="details wards-list"><strong>Wards Covered:</strong> ${wardsList}</div>
                            <button class="copy-btn" onclick="copyToClipboard(this)">Copy for Handover</button>`;
   }
