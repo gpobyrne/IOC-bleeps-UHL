@@ -10,6 +10,11 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <style>
+  /* Global box-sizing fix prevents width overflow on mobile */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     padding: 20px;
@@ -23,15 +28,41 @@
   }
   .content { flex: 1; }
   
-  #date-display h1 {
-    margin-top: 0;
+  .top-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
-    color: #333;
   }
 
-  h1 { margin-bottom: 20px; font-size: 1.5em;}
-  
+  h1 { margin: 0; font-size: 1.35em;}
   h2 { margin-bottom: 15px; font-size: 1.3em;}
+  h3 { margin-bottom: 15px; margin-top: 0; }
+
+  /* Change Date Button Wrapper */
+  .date-picker-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+  .small-btn {
+    background-color: #e2e3e5;
+    border: 1px solid #ccc;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+  }
+  .hidden-date-input {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
 
   /* Flex Layout for Rows */
   .bleep-row {
@@ -49,7 +80,7 @@
   
   /* Day/Night Theming */
   .day-box {
-    background-color: rgba(0, 123, 255, 0.08); /* Subtle transparent blue */
+    background-color: rgba(0, 123, 255, 0.08);
     color: #212529;
   }
   .day-box .shift-header {
@@ -58,7 +89,7 @@
   }
   
   .night-box {
-    background-color: rgba(10, 30, 65, 0.9); /* Subtle dark blue/navy */
+    background-color: rgba(10, 30, 65, 0.9);
     color: #f8f9fa;
   }
   .night-box .shift-header {
@@ -66,7 +97,7 @@
     color: #ffffff;
   }
   .night-box .wards-text {
-    color: #d0d5db; /* Softer white for readability */
+    color: #d0d5db;
   }
 
   .shift-header {
@@ -91,10 +122,9 @@
 
   .form-group { margin-bottom: 20px; }
   label { display: block; margin-bottom: 8px; font-weight: bold; }
-  select, input, button { 
+  select, input:not(.hidden-date-input), button:not(.small-btn) { 
     width: 100%; 
     padding: 12px; 
-    box-sizing: border-box; 
     font-size: 16px; 
     border: 1px solid #ccc;
     border-radius: 6px;
@@ -149,9 +179,15 @@
 <body>
 
 <div class="content">
-  <div id="date-display"></div>
+  <div class="top-header-row">
+    <h1>🗓️ <span id="top-date-text"></span></h1>
+    <div class="date-picker-wrapper">
+      <button class="small-btn">📅 Change</button>
+      <input type="date" id="top-date-picker" class="hidden-date-input" onchange="handleTopDateChange()">
+    </div>
+  </div>
   
-  <h3>Interns carrying arrest bleep today:</h3>
+  <h3>Interns carrying arrest bleep <span id="dynamic-today-text">today</span>:</h3>
 
   <div id="todays-bleeps-container"></div>
   
@@ -209,26 +245,38 @@
 
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-  // Initialization - runs only once on page load
   window.onload = function() {
     const todayObj = new Date();
     document.getElementById('date').valueAsDate = todayObj;
+    document.getElementById('top-date-picker').valueAsDate = todayObj;
     displayTodaysBleeps(todayObj);
   };
+
+  function handleTopDateChange() {
+    const selectedDate = document.getElementById('top-date-picker').value;
+    if(selectedDate) {
+      displayTodaysBleeps(new Date(selectedDate));
+    }
+  }
   
   function displayTodaysBleeps(dateObj) {
-    const todayName = dayNames[dateObj.getDay()];
+    const dayName = dayNames[dateObj.getDay()];
     const dateString = dateObj.toLocaleDateString('en-IE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     
-    // Inject Date as H1 at the top
-    document.getElementById('date-display').innerHTML = `<h1>🗓️ ${dateString}</h1>`;
+    // Update H1 Text
+    document.getElementById('top-date-text').innerText = dateString;
+
+    // Check if viewed date is actual today to update the grammar gracefully
+    const actualToday = new Date();
+    const isToday = dateObj.toDateString() === actualToday.toDateString();
+    document.getElementById('dynamic-today-text').innerText = isToday ? "today" : "on this date";
 
     let dayShiftsHTML = '';
     let nightShiftsHTML = '';
 
     // Group active bleeps by Day (LD) vs Night (N)
     for (const [shift, data] of Object.entries(bleepData)) {
-      if (data.days.includes(todayName)) {
+      if (data.days.includes(dayName)) {
         const isDayShift = shift.startsWith('LD');
         const boxClass = isDayShift ? 'day-box' : 'night-box';
         
