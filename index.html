@@ -23,7 +23,7 @@
   }
   .content { flex: 1; }
   
-  #date-display h3 {
+  #date-display h2 {
     margin-top: 0;
     margin-bottom: 20px;
     color: #495057;
@@ -74,10 +74,15 @@
     margin-bottom: 6px;
   }
   
-  /* Separator Line */
+  /* Separator Lines */
   .separator {
     margin: 15px 0;
     border-top: 2px dashed #b0b5ba;
+  }
+
+  .separator2 {
+   margin: 15px 0;
+   border-bottom: 2px solid #b0b5ba;
   }
 
   .lookup-section { margin-top: 35px; } 
@@ -143,12 +148,10 @@
 
 <div class="content">
   <div id="date-display"></div>
-
-  <h2>Who's on arrest bleep today?</h2>
   <div id="todays-bleeps-container"></div>
   
   <div class="lookup-section">
-    <h3>Arrest Bleep Status Lookup</h3>
+    <h4>Check Arrest Bleep Status for an Upcoming Shift</h4>
 
     <div class="form-group">
       <label for="shift">Select Shift:</label>
@@ -244,6 +247,7 @@
       <div class="bleep-row">${dayShiftsHTML}</div>
       <div class="separator"></div>
       <div class="bleep-row">${nightShiftsHTML}</div>
+      <div class="separator2"></div>
     `;
     
     document.getElementById('todays-bleeps-container').innerHTML = containerHTML;
