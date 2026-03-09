@@ -23,33 +23,64 @@
   }
   .content { flex: 1; }
   
-  h2 { margin-bottom: 5px; }
-  .date-header { 
-    margin-top: 5px; 
-    margin-bottom: 15px; 
-    color: #495057; 
-    font-size: 1.1em;
+  #date-display h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #495057;
   }
 
-  /* Individual Bleep Card Styling */
-  .bleep-card {
-    background-color: #e2e3e5;
-    border: 1px solid #d6d8db;
-    color: #383d41;
-    padding: 12px;
+  h2 { margin-bottom: 15px; font-size: 1.3em;}
+
+  /* Flex Layout for Rows */
+  .bleep-row {
+    display: flex;
+    gap: 10px;
+  }
+  .shift-col {
+    flex: 1;
     border-radius: 6px;
-    margin-bottom: 12px;
-    font-size: 0.95em;
+    padding: 10px;
+    font-size: 0.85em;
     line-height: 1.4;
+    border: 1px solid rgba(0,0,0,0.1);
   }
-  .bleep-card-title {
-    font-size: 1.1em;
-    margin-bottom: 6px;
-    border-bottom: 1px solid #d6d8db;
-    padding-bottom: 4px;
+  
+  /* Day/Night Theming */
+  .day-box {
+    background-color: rgba(0, 123, 255, 0.08); /* Subtle transparent blue */
+    color: #212529;
+  }
+  .day-box .shift-header {
+    border-bottom: 1px solid rgba(0, 123, 255, 0.2);
+    color: #004494;
+  }
+  
+  .night-box {
+    background-color: rgba(10, 30, 65, 0.9); /* Subtle dark blue/navy */
+    color: #f8f9fa;
+  }
+  .night-box .shift-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+  }
+  .night-box .wards-text {
+    color: #d0d5db; /* Softer white for readability */
   }
 
-  .lookup-section { margin-top: 35px; } /* Controls spacing between the two sections */
+  .shift-header {
+    font-weight: bold;
+    font-size: 1.05em;
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+  }
+  
+  /* Separator Line */
+  .separator {
+    margin: 15px 0;
+    border-top: 2px dashed #b0b5ba;
+  }
+
+  .lookup-section { margin-top: 35px; } 
 
   .form-group { margin-bottom: 20px; }
   label { display: block; margin-bottom: 8px; font-weight: bold; }
@@ -111,7 +142,9 @@
 <body>
 
 <div class="content">
-  <h2>Who's on Arrest bleep today?</h2>
+  <div id="date-display"></div>
+
+  <h2>Who's on arrest bleep today?</h2>
   <div id="todays-bleeps-container"></div>
   
   <div class="lookup-section">
@@ -168,7 +201,7 @@
 
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-  // Initialization
+  // Initialization - runs only once on page load
   window.onload = function() {
     const todayObj = new Date();
     document.getElementById('date').valueAsDate = todayObj;
@@ -177,31 +210,41 @@
   
   function displayTodaysBleeps(dateObj) {
     const todayName = dayNames[dateObj.getDay()];
-    // Format date as "Monday, 9 March 2026"
     const dateString = dateObj.toLocaleDateString('en-IE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    let activeBleeps = {};
+    
+    // Inject Date as H3 at the top
+    document.getElementById('date-display').innerHTML = `<h3>🗓️ ${dateString}</h3>`;
 
-    // Group shifts and grab wards carrying the bleep today
+    let dayShiftsHTML = '';
+    let nightShiftsHTML = '';
+
+    // Group active bleeps by Day (LD) vs Night (N)
     for (const [shift, data] of Object.entries(bleepData)) {
       if (data.days.includes(todayName)) {
-        if (!activeBleeps[data.bleep]) {
-          activeBleeps[data.bleep] = { shifts: [], wards: data.wards.join(', ') };
+        const isDayShift = shift.startsWith('LD');
+        const boxClass = isDayShift ? 'day-box' : 'night-box';
+        
+        const boxHTML = `
+          <div class="shift-col ${boxClass}">
+            <div class="shift-header">${shift} (Bleep ${data.bleep})</div>
+            <div class="wards-text"><strong>Wards:</strong> ${data.wards.join(', ')}</div>
+          </div>
+        `;
+        
+        if (isDayShift) {
+          dayShiftsHTML += boxHTML;
+        } else {
+          nightShiftsHTML += boxHTML;
         }
-        activeBleeps[data.bleep].shifts.push(shift);
       }
     }
 
-    // Build the HTML
-    let containerHTML = `<h3 class="date-header">🗓️ ${dateString}</h3>`;
-    
-    for (const [bleep, info] of Object.entries(activeBleeps)) {
-      containerHTML += `
-        <div class="bleep-card">
-          <div class="bleep-card-title"><strong>${info.shifts.join(' & ')}</strong> (Bleep ${bleep})</div>
-          <div><strong>Wards:</strong> ${info.wards}</div>
-        </div>
-      `;
-    }
+    // Combine into final structure with separator
+    const containerHTML = `
+      <div class="bleep-row">${dayShiftsHTML}</div>
+      <div class="separator"></div>
+      <div class="bleep-row">${nightShiftsHTML}</div>
+    `;
     
     document.getElementById('todays-bleeps-container').innerHTML = containerHTML;
   }
@@ -227,7 +270,6 @@
     const wardsList = shiftData.wards.join(', ');
     const bleepNum = shiftData.bleep;
 
-    // Build text for clipboard
     currentCopyText = `Shift: ${shift} | Arrest Bleep: ${isCarrying ? 'YES' : 'NO'} (${bleepNum}) | Wards: ${wardsList}`;
 
     resultDiv.style.display = 'block';
