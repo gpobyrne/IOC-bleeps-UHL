@@ -116,8 +116,8 @@
   }
   .yes { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
   .no { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  .wards-list { margin-top: 8px; padding-top: 8px; border-bottom: 1px dashed currentColor; }
   .details { margin-top: 10px; font-size: 0.9em; font-weight: normal; line-height: 1.4;}
-  .wards-list { margin-top: 8px; padding-top: 8px; border-top: 1px dashed currentColor; }
   
   .copy-btn {
     background-color: transparent;
@@ -286,8 +286,8 @@
         : `<strong>NO.</strong> ${shift} does not carry the arrest bleep on ${selectedDay}s.`;
 
     resultDiv.innerHTML = `${statusText}
-                           <div class="details">Arrest bleep days: ${routineDays}</div>
                            <div class="details wards-list"><strong>Wards Covered:</strong> ${wardsList}</div>
+                           <div class="details">Arrest bleep days: ${routineDays}</div>
                            <button class="copy-btn" onclick="copyToClipboard(this)">Copy to Clipboard</button>`;
   }
 
