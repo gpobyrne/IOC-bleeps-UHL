@@ -9,7 +9,7 @@ This is a static webpage, meaning that it must be manually updated.
 
 Currently, all query results are based on the revised Intern On Call Rota Structure document that was distributed by UHL's Medical Manpower department (via email) on 27/02/2026. 
 
-If the Ward Distributions or Arrest Bleep Schedule change in the future, then the results of this page will be inaccurate, unless the json dictionary in index.html is manually updated. 
+If the Ward Distributions or Arrest Bleep Schedule change in the future, then the results of this page will be inaccurate (unless the json dictionary in index.html is manually updated). 
 
 ***************************************************************************************
 
