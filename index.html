@@ -23,12 +23,14 @@
   }
   .content { flex: 1; }
   
-  #date-display h2 {
+  #date-display h1 {
     margin-top: 0;
     margin-bottom: 20px;
     color: #333;
   }
 
+  h1 { margin-bottom: 20px; font-size: 1.5em;}
+  
   h2 { margin-bottom: 15px; font-size: 1.3em;}
 
   /* Flex Layout for Rows */
@@ -151,7 +153,7 @@
   <div id="todays-bleeps-container"></div>
   
   <div class="lookup-section">
-    <h4>Check Arrest Bleep Status for an Upcoming Shift</h4>
+    <h2>Check Arrest Bleep Status for an Upcoming Shift</h2>
 
     <div class="form-group">
       <label for="shift">Select Shift:</label>
@@ -215,8 +217,8 @@
     const todayName = dayNames[dateObj.getDay()];
     const dateString = dateObj.toLocaleDateString('en-IE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     
-    // Inject Date as H2 at the top
-    document.getElementById('date-display').innerHTML = `<h2>🗓️ ${dateString}</h2>`;
+    // Inject Date as H1 at the top
+    document.getElementById('date-display').innerHTML = `<h1>🗓️ ${dateString}</h1>`;
 
     let dayShiftsHTML = '';
     let nightShiftsHTML = '';
@@ -286,7 +288,7 @@
     resultDiv.innerHTML = `${statusText}
                            <div class="details">Routine cardiac days: ${routineDays}</div>
                            <div class="details wards-list"><strong>Wards Covered:</strong> ${wardsList}</div>
-                           <button class="copy-btn" onclick="copyToClipboard(this)">Copy for Handover</button>`;
+                           <button class="copy-btn" onclick="copyToClipboard(this)">Copy to Clipboard</button>`;
   }
 
   function copyToClipboard(btnElement) {
